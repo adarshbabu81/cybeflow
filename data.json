@@ -1,0 +1,38 @@
+{
+  "terms": [
+    { "name": "Phishing", "description": "Fraudulent attempt to steal credentials or data by impersonating a trusted entity." },
+    { "name": "Malware", "description": "Software designed to damage, disrupt, or gain unauthorized access to systems." },
+    { "name": "Zero-Day", "description": "An unknown vulnerability exploited before a patch is available." },
+    { "name": "Ransomware", "description": "Malware that encrypts files and demands payment for the decryption key." },
+    { "name": "Firewall", "description": "A control that filters inbound and outbound traffic against defined rules." },
+    { "name": "Encryption", "description": "Converting data into ciphertext so only authorized parties can read it." },
+    { "name": "Brute Force", "description": "Systematically trying combinations to crack passwords or keys." },
+    { "name": "SQL Injection", "description": "Injecting malicious SQL into inputs to manipulate a database." },
+    { "name": "Social Engineering", "description": "Manipulating people into revealing information or performing unsafe actions." },
+    { "name": "DDoS", "description": "Flooding a target with traffic from many sources to exhaust its resources." },
+    { "name": "MFA", "description": "Requiring two or more verification factors before granting access." },
+    { "name": "Privilege Escalation", "description": "Gaining higher access rights than originally granted on a system." }
+  ],
+  "tools": [
+    { "name": "Nmap", "category": "Recon", "description": "Port scanning and network discovery utility for host and service mapping.", "link": "https://nmap.org" },
+    { "name": "Wireshark", "category": "Network", "description": "Protocol analyzer for capturing and inspecting live network traffic.", "link": "https://www.wireshark.org" },
+    { "name": "Metasploit", "category": "Exploitation", "description": "Framework for developing, testing, and executing exploit code.", "link": "https://www.metasploit.com" },
+    { "name": "Burp Suite", "category": "Web", "description": "Platform for testing web application security and intercepting traffic.", "link": "https://portswigger.net/burp" },
+    { "name": "John the Ripper", "category": "Passwords", "description": "Fast password cracker supporting many hash and cipher formats.", "link": "https://www.openwall.com/john" },
+    { "name": "Aircrack-ng", "category": "Wireless", "description": "Suite for assessing Wi-Fi security and cracking WEP/WPA keys.", "link": "https://www.aircrack-ng.org" },
+    { "name": "Hydra", "category": "Passwords", "description": "Flexible online brute-force tool supporting many protocols.", "link": "https://github.com/vanhauser-thc/thc-hydra" },
+    { "name": "Nikto", "category": "Web", "description": "Web server scanner for dangerous files and misconfigurations.", "link": "https://github.com/sullo/nikto" },
+    { "name": "Snort", "category": "Network", "description": "Open-source intrusion detection and prevention system.", "link": "https://www.snort.org" }
+  ],
+  "links": [
+    { "name": "OWASP", "purpose": "Web application security knowledge base and Top 10.", "category": "Learning", "url": "https://owasp.org" },
+    { "name": "Hack The Box", "purpose": "Hands-on penetration testing labs and challenges.", "category": "Labs", "url": "https://www.hackthebox.com" },
+    { "name": "TryHackMe", "purpose": "Guided learning paths and interactive practice rooms.", "category": "Learning", "url": "https://tryhackme.com" },
+    { "name": "MITRE ATT&CK", "purpose": "Knowledge base of adversary tactics and techniques.", "category": "Threat Intel", "url": "https://attack.mitre.org" },
+    { "name": "The Hacker News", "purpose": "Daily security news and breach reporting.", "category": "News", "url": "https://thehackernews.com" },
+    { "name": "VirusTotal", "purpose": "Analyze files and URLs against many antivirus engines.", "category": "Threat Intel", "url": "https://www.virustotal.com" },
+    { "name": "CVE Details", "purpose": "Searchable database of disclosed vulnerabilities.", "category": "Documentation", "url": "https://www.cvedetails.com" },
+    { "name": "Exploit-DB", "purpose": "Archive of public exploits and vulnerable software.", "category": "Documentation", "url": "https://www.exploit-db.com" },
+    { "name": "Shodan", "purpose": "Search engine for internet-connected devices.", "category": "Threat Intel", "url": "https://www.shodan.io" }
+  ]
+}

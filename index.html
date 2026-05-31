@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberFlow — Workspace</title>
+
+  <style>
+    /* ============================================================
+       CyberFlow — shadcn-inspired design tokens
+       ============================================================ */
+    :root[data-theme="dark"] {
+      --background:        240 10% 3.9%;
+      --foreground:        0 0% 98%;
+      --card:              240 10% 5.5%;
+      --card-hover:        240 8% 8%;
+      --muted:             240 4% 16%;
+      --muted-foreground:  240 5% 64.9%;
+      --border:            240 4% 15%;
+      --border-strong:     240 5% 24%;
+      --input:             240 6% 10%;
+      --primary:           0 0% 98%;
+      --primary-foreground:240 6% 10%;
+      --accent:            201 90% 55%;       /* muted blue */
+      --accent-foreground: 0 0% 100%;
+      --ring:              201 90% 55%;
+      --sidebar:           240 10% 4.6%;
+      --shadow:            0 1px 2px 0 rgb(0 0 0 / 0.5);
+      --shadow-md:         0 4px 14px -4px rgb(0 0 0 / 0.55);
+    }
+    :root[data-theme="light"] {
+      --background:        0 0% 100%;
+      --foreground:        240 10% 3.9%;
+      --card:              0 0% 100%;
+      --card-hover:        240 5% 98%;
+      --muted:             240 5% 96%;
+      --muted-foreground:  240 4% 46%;
+      --border:            240 6% 90%;
+      --border-strong:     240 6% 82%;
+      --input:             240 6% 96%;
+      --primary:           240 6% 10%;
+      --primary-foreground:0 0% 98%;
+      --accent:            201 90% 45%;
+      --accent-foreground: 0 0% 100%;
+      --ring:              201 90% 45%;
+      --sidebar:           240 5% 98.5%;
+      --shadow:            0 1px 2px 0 rgb(0 0 0 / 0.06);
+      --shadow-md:         0 4px 14px -4px rgb(0 0 0 / 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --radius: 0.65rem;
+      --radius-sm: 0.45rem;
+      --sidebar-w: 260px;
+      --topbar-h: 70px;
+    }
+
+    html { font-size: 15px; }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      transition: background .25s ease, color .25s ease;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: hsl(var(--accent) / .85); color: #fff; }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: hsl(var(--border-strong)); border-radius: 20px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    .icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ============================================================
+       App shell
+       ============================================================ */
+    .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh;
+      background: hsl(var(--sidebar));
+      border-right: 1px solid hsl(var(--border));
+      display: flex; flex-direction: column;
+      padding: 16px 14px;
+      z-index: 40;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 8px 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    .brand .mark {
+      width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+      display: grid; place-items: center;
+      background: hsl(var(--accent)); color: #fff;
+      box-shadow: var(--shadow);
+    }
+    .brand .mark .icon { width: 19px; height: 19px; }
+    .brand .name { font-weight: 650; font-size: 1.02rem; letter-spacing: -.01em; }
+    .brand .name small { display: block; font-size: .68rem; font-weight: 450; color: hsl(var(--muted-foreground)); letter-spacing: .02em; }
+
+    .nav-group-label {
+      font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+      color: hsl(var(--muted-foreground)); padding: 12px 10px 6px; font-weight: 600;
+    }
+    .nav { display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 9px 11px; border-radius: var(--radius-sm);
+      color: hsl(var(--muted-foreground));
+      font-size: .9rem; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent;
+      transition: background .15s ease, color .15s ease;
+      width: 100%; text-align: left; background: none;
+    }
+    .nav-item:hover { background: hsl(var(--muted) / .6); color: hsl(var(--foreground)); }
+    .nav-item.active { background: hsl(var(--muted)); color: hsl(var(--foreground)); border-color: hsl(var(--border)); }
+    .nav-item .badge-count {
+      margin-left: auto; font-size: .7rem; font-weight: 600;
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      padding: 1px 7px; border-radius: 100px; min-width: 20px; text-align: center;
+    }
+    .nav-item.active .badge-count { background: hsl(var(--accent) / .15); color: hsl(var(--accent)); }
+
+    .sidebar-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid hsl(var(--border)); }
+    .user-chip {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm);
+    }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center; font-size: .8rem; font-weight: 600;
+      background: linear-gradient(135deg, hsl(var(--accent)), hsl(263 70% 60%)); color: #fff;
+    }
+    .user-chip .meta { font-size: .8rem; line-height: 1.25; overflow: hidden; }
+    .user-chip .meta b { font-weight: 600; }
+    .user-chip .meta span { display: block; color: hsl(var(--muted-foreground)); font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ---------- Main column ---------- */
+    .main { display: flex; flex-direction: column; min-width: 0; }
+
+    /* Topbar */
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      height: var(--topbar-h);
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 24px;
+      background: hsl(var(--background) / .8);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    .menu-btn { display: none; }
+    .page-meta h1 { font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; }
+    .page-meta p { font-size: .78rem; color: hsl(var(--muted-foreground)); }
+
+    .topbar .search { margin-left: auto; position: relative; width: min(360px, 38vw); }
+    .topbar .search .icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: hsl(var(--muted-foreground)); }
+    .topbar .search input {
+      width: 100%; height: 38px; padding: 0 40px 0 36px;
+      background: hsl(var(--input)); color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+      font-size: .86rem; outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    .topbar .search input::placeholder { color: hsl(var(--muted-foreground)); }
+    .topbar .search input:focus { border-color: hsl(var(--ring) / .6); box-shadow: 0 0 0 3px hsl(var(--ring) / .15); }
+    .topbar .search kbd {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      font-size: .68rem; font-family: ui-monospace, monospace;
+      color: hsl(var(--muted-foreground)); background: hsl(var(--muted)); border: 1px solid hsl(var(--border));
+      padding: 1px 6px; border-radius: 5px;
+    }
+
+    .icon-btn {
+      width: 38px; height: 38px; flex-shrink: 0;
+      display: grid; place-items: center; cursor: pointer;
+      background: hsl(var(--input)); color: hsl(var(--muted-foreground));
+      border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+      transition: color .15s, background .15s, border-color .15s;
+    }
+    .icon-btn:hover { color: hsl(var(--foreground)); background: hsl(var(--card-hover)); }
+    .icon-btn .sun { display: none; }
+    :root[data-theme="light"] .icon-btn .sun { display: block; }
+    :root[data-theme="light"] .icon-btn .moon { display: none; }
+
+    .topbar .avatar { cursor: pointer; }
+
+    /* Content area */
+    .content { padding: 24px; flex: 1; }
+    .view { display: none; animation: fade .25s ease; }
+    .view.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .view-head { margin-bottom: 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .view-head h2 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; }
+    .view-head p { font-size: .85rem; color: hsl(var(--muted-foreground)); margin-top: 2px; }
+
+    /* Local toolbar (search + filters within a module) */
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+    .toolbar .field { position: relative; flex: 0 1 280px; min-width: 180px; }
+    .toolbar .field .icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: hsl(var(--muted-foreground)); }
+    .toolbar .field input {
+      width: 100%; height: 36px; padding: 0 12px 0 34px;
+      background: hsl(var(--input)); color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+      font-size: .85rem; outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    .toolbar .field input:focus { border-color: hsl(var(--ring) / .6); box-shadow: 0 0 0 3px hsl(var(--ring) / .15); }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      height: 36px; padding: 0 13px; font-size: .8rem; font-weight: 500; cursor: pointer;
+      display: inline-flex; align-items: center;
+      background: hsl(var(--input)); color: hsl(var(--muted-foreground));
+      border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm);
+      transition: color .15s, background .15s, border-color .15s;
+    }
+    .chip:hover { color: hsl(var(--foreground)); border-color: hsl(var(--border-strong)); }
+    .chip.active { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
+
+    /* ---------- Cards / grids ---------- */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+    .stat {
+      background: hsl(var(--card)); border: 1px solid hsl(var(--border));
+      border-radius: var(--radius); padding: 16px 16px 14px; box-shadow: var(--shadow);
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    .stat:hover { background: hsl(var(--card-hover)); border-color: hsl(var(--border-strong)); transform: translateY(-2px); }
+    .stat .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .stat .label { font-size: .8rem; color: hsl(var(--muted-foreground)); font-weight: 500; }
+    .stat .ico { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: hsl(var(--muted)); color: hsl(var(--accent)); }
+    .stat .ico .icon { width: 17px; height: 17px; }
+    .stat .num { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+    .stat .delta { font-size: .74rem; color: hsl(var(--muted-foreground)); margin-top: 6px; }
+    .stat .delta b { color: hsl(142 60% 45%); font-weight: 600; }
+
+    .section-label { font-size: .82rem; font-weight: 600; color: hsl(var(--muted-foreground)); margin: 6px 0 12px; display: flex; align-items: center; justify-content: space-between; }
+    .section-label a { color: hsl(var(--accent)); font-weight: 500; cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+
+    .card {
+      background: hsl(var(--card)); border: 1px solid hsl(var(--border));
+      border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 8px;
+      transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
+    }
+    .card:hover { background: hsl(var(--card-hover)); border-color: hsl(var(--border-strong)); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .card h3 { font-size: .95rem; font-weight: 600; letter-spacing: -.01em; }
+    .card p { font-size: .83rem; color: hsl(var(--muted-foreground)); }
+    .badge {
+      font-size: .68rem; font-weight: 600; letter-spacing: .02em;
+      padding: 2px 9px; border-radius: 100px; white-space: nowrap;
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      border: 1px solid hsl(var(--border));
+    }
+    .badge.accent { background: hsl(var(--accent) / .12); color: hsl(var(--accent)); border-color: hsl(var(--accent) / .22); }
+    .card .foot { margin-top: 4px; display: flex; align-items: center; justify-content: space-between; }
+    .link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .8rem; font-weight: 550; color: hsl(var(--foreground));
+      padding: 6px 11px; border-radius: var(--radius-sm);
+      border: 1px solid hsl(var(--border)); background: hsl(var(--input));
+      transition: background .15s, border-color .15s;
+    }
+    .link-btn:hover { background: hsl(var(--card-hover)); border-color: hsl(var(--border-strong)); }
+    .link-btn .icon { width: 14px; height: 14px; }
+    .muted-ico { color: hsl(var(--muted-foreground)); }
+    .muted-ico .icon { width: 16px; height: 16px; }
+
+    /* ---------- States ---------- */
+    .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .skeleton { height: 104px; border-radius: var(--radius); border: 1px solid hsl(var(--border));
+      background: linear-gradient(100deg, hsl(var(--card)) 30%, hsl(var(--card-hover)) 50%, hsl(var(--card)) 70%);
+      background-size: 200% 100%; animation: shimmer 1.3s infinite linear; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .state {
+      grid-column: 1 / -1; text-align: center; padding: 48px 20px;
+      border: 1px dashed hsl(var(--border-strong)); border-radius: var(--radius);
+      background: hsl(var(--card)); color: hsl(var(--muted-foreground));
+    }
+    .state .icon { width: 30px; height: 30px; margin: 0 auto 10px; color: hsl(var(--muted-foreground)); }
+    .state h4 { color: hsl(var(--foreground)); font-size: .98rem; font-weight: 600; margin-bottom: 4px; }
+    .state.error { border-color: hsl(0 70% 50% / .5); }
+    .state.error .icon { color: hsl(0 75% 60%); }
+    .state .retry {
+      margin-top: 14px; padding: 8px 16px; font-size: .82rem; cursor: pointer;
+      background: hsl(var(--primary)); color: hsl(var(--primary-foreground));
+      border: none; border-radius: var(--radius-sm); font-weight: 550;
+    }
+
+    /* ---------- Responsive ---------- */
+    .backdrop { display: none; }
+    @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; width: var(--sidebar-w);
+        transform: translateX(-100%); transition: transform .25s ease; box-shadow: var(--shadow-md);
+      }
+      .app.nav-open .sidebar { transform: none; }
+      .app.nav-open .backdrop { display: block; position: fixed; inset: 0; background: rgb(0 0 0 / .5); z-index: 35; }
+      .menu-btn { display: grid; }
+      .topbar .search kbd { display: none; }
+    }
+    @media (max-width: 520px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .content { padding: 16px; }
+      .page-meta p { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- ============================ SIDEBAR ============================ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div class="name">CyberFlow<small>Security Workspace</small></div>
+      </div>
+
+      <div class="nav-group-label">Workspace</div>
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-view="dashboard">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="terms">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Terms</span>
+          <span class="badge-count" data-count="terms">0</span>
+        </button>
+        <button class="nav-item" data-view="tools">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1 2.5-2.5z"/></svg>
+          <span>Security Tools</span>
+          <span class="badge-count" data-count="tools">0</span>
+        </button>
+        <button class="nav-item" data-view="links">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+          <span>Cyber Links</span>
+          <span class="badge-count" data-count="links">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <div class="avatar">CF</div>
+          <div class="meta"><b>Analyst</b><span>analyst@cyberflow.io</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============================ MAIN ============================ -->
+    <div class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Toggle menu">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="page-meta">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSub">Overview of your security workspace</p>
+        </div>
+
+        <div class="search">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="globalSearch" type="search" placeholder="Search terms, tools, links…" aria-label="Global search" />
+          <kbd>/</kbd>
+        </div>
+
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+          <svg class="icon moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="icon sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <div class="avatar" title="analyst@cyberflow.io">CF</div>
+      </header>
+
+      <!-- Content -->
+      <main class="content">
+        <!-- ---------- Dashboard view ---------- -->
+        <section class="view active" id="view-dashboard">
+          <div class="stat-grid" id="statGrid"></div>
+
+          <div class="section-label">Recently added terms <a data-jump="terms">View all</a></div>
+          <div class="grid" id="recentTerms"></div>
+
+          <div class="section-label" style="margin-top:24px;">Popular tools <a data-jump="tools">View all</a></div>
+          <div class="grid" id="recentTools"></div>
+        </section>
+
+        <!-- ---------- Terms view ---------- -->
+        <section class="view" id="view-terms">
+          <div class="view-head"><div><h2>Cyber Security Terms</h2><p>Core vocabulary for analysts and defenders</p></div></div>
+          <div class="toolbar">
+            <div class="field">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="search" id="termsSearch" placeholder="Search terms…" aria-label="Search terms" />
+            </div>
+          </div>
+          <div class="grid" id="termsGrid"></div>
+        </section>
+
+        <!-- ---------- Tools view ---------- -->
+        <section class="view" id="view-tools">
+          <div class="view-head"><div><h2>Security Tools</h2><p>Software for recon, exploitation, and defense</p></div></div>
+          <div class="toolbar">
+            <div class="field">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="search" id="toolsSearch" placeholder="Search tools…" aria-label="Search tools" />
+            </div>
+            <div class="filters" id="toolsFilters"></div>
+          </div>
+          <div class="grid" id="toolsGrid"></div>
+        </section>
+
+        <!-- ---------- Links view ---------- -->
+        <section class="view" id="view-links">
+          <div class="view-head"><div><h2>Cyber Links</h2><p>Trusted resources professionals use daily</p></div></div>
+          <div class="toolbar">
+            <div class="field">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="search" id="linksSearch" placeholder="Search links…" aria-label="Search links" />
+            </div>
+            <div class="filters" id="linksFilters"></div>
+          </div>
+          <div class="grid" id="linksGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="backdrop" id="backdrop"></div>
+  </div>
+
+  <script>
+    /* ================================================================
+       CyberFlow — dashboard logic (vanilla, no dependencies)
+       ================================================================ */
+    'use strict';
+
+    const state = {
+      data: { terms: [], tools: [], links: [] },
+      filters: { terms: '', tools: '', links: '', toolCat: 'All', linkCat: 'All' },
+      view: 'dashboard',
+    };
+
+    const META = {
+      dashboard: { title: 'Dashboard',      sub: 'Overview of your security workspace' },
+      terms:     { title: 'Terms',          sub: 'Core vocabulary for analysts and defenders' },
+      tools:     { title: 'Security Tools', sub: 'Software for recon, exploitation, and defense' },
+      links:     { title: 'Cyber Links',    sub: 'Trusted resources professionals use daily' },
+    };
+
+    /* ---- helpers ---- */
+    const $  = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const esc = (str) => String(str ?? '').replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const extIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+
+    const skeleton = (n = 6) => `<div class="skeleton-grid">${'<div class="skeleton"></div>'.repeat(n)}</div>`;
+    const empty = (msg) => `
+      <div class="state">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <h4>No results</h4><p>${esc(msg)}</p>
+      </div>`;
+    const errorBox = () => `
+      <div class="state error">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <h4>Couldn't load data.json</h4>
+        <p>Serve this folder over HTTP — browsers block fetch on file://.</p>
+        <button class="retry" onclick="loadData()">Retry</button>
+      </div>`;
+
+    /* ================================================================
+       Renderers
+       ================================================================ */
+    function renderDashboard() {
+      const t = state.data.terms.length, o = state.data.tools.length, l = state.data.links.length;
+      const stats = [
+        { label: 'Total Terms', value: t, ico: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>', delta: 'reference entries' },
+        { label: 'Total Tools', value: o, ico: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1 2.5-2.5z"/>', delta: 'across categories' },
+        { label: 'Cyber Links', value: l, ico: '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>', delta: 'curated resources' },
+        { label: 'Total Items', value: t + o + l, ico: '<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-5"/>', delta: 'in workspace' },
+      ];
+      $('#statGrid').innerHTML = stats.map((s, i) => `
+        <div class="stat" style="animation-delay:${i * .05}s">
+          <div class="row">
+            <span class="label">${s.label}</span>
+            <span class="ico"><svg class="icon" viewBox="0 0 24 24">${s.ico}</svg></span>
+          </div>
+          <div class="num" data-target="${s.value}">0</div>
+          <div class="delta"><b>${s.value}</b> ${s.delta}</div>
+        </div>`).join('');
+      countUp();
+
+      // Recent previews
+      $('#recentTerms').innerHTML = state.data.terms.slice(0, 4).map(termCard).join('') || empty('No terms yet.');
+      $('#recentTools').innerHTML = state.data.tools.slice(0, 4).map(toolCard).join('') || empty('No tools yet.');
+    }
+
+    function countUp() {
+      $$('.num[data-target]').forEach((el) => {
+        const target = +el.dataset.target || 0, start = performance.now(), dur = 700;
+        const tick = (now) => {
+          const p = Math.min((now - start) / dur, 1);
+          el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+
+    /* card templates */
+    const termCard = (t) => `
+      <article class="card">
+        <div class="top"><h3>${esc(t.name)}</h3></div>
+        <p>${esc(t.description)}</p>
+      </article>`;
+
+    const toolCard = (t) => `
+      <article class="card">
+        <div class="top">
+          <h3>${esc(t.name)}</h3>
+          ${t.category ? `<span class="badge accent">${esc(t.category)}</span>` : ''}
+        </div>
+        <p>${esc(t.description)}</p>
+        ${t.link ? `<div class="foot"><span></span><a class="link-btn" href="${esc(t.link)}" target="_blank" rel="noopener noreferrer">Website ${extIcon}</a></div>` : ''}
+      </article>`;
+
+    const linkCard = (l) => `
+      <article class="card">
+        <div class="top">
+          <h3>${esc(l.name)}</h3>
+          ${l.category ? `<span class="badge">${esc(l.category)}</span>` : ''}
+        </div>
+        <p>${esc(l.purpose)}</p>
+        ${l.url ? `<div class="foot"><span class="muted-ico"><svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><a class="link-btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Open ${extIcon}</a></div>` : ''}
+      </article>`;
+
+    function renderTerms() {
+      const grid = $('#termsGrid'), q = state.filters.terms.toLowerCase();
+      if (!state.data.terms.length) return void (grid.innerHTML = empty('No terms in data.json.'));
+      const items = state.data.terms.filter((t) =>
+        t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q));
+      grid.innerHTML = items.length ? items.map(termCard).join('') : empty('No terms match your search.');
+    }
+
+    function renderTools() {
+      const grid = $('#toolsGrid'), q = state.filters.tools.toLowerCase(), cat = state.filters.toolCat;
+      if (!state.data.tools.length) return void (grid.innerHTML = empty('No tools in data.json.'));
+      const items = state.data.tools.filter((t) => {
+        const okCat = cat === 'All' || t.category === cat;
+        const okText = t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || (t.category || '').toLowerCase().includes(q);
+        return okCat && okText;
+      });
+      grid.innerHTML = items.length ? items.map(toolCard).join('') : empty('No tools match your filters.');
+    }
+
+    function renderLinks() {
+      const grid = $('#linksGrid'), q = state.filters.links.toLowerCase(), cat = state.filters.linkCat;
+      if (!state.data.links.length) return void (grid.innerHTML = empty('No links in data.json.'));
+      const items = state.data.links.filter((l) => {
+        const okCat = cat === 'All' || l.category === cat;
+        const okText = l.name.toLowerCase().includes(q) || (l.purpose || '').toLowerCase().includes(q) || (l.category || '').toLowerCase().includes(q);
+        return okCat && okText;
+      });
+      grid.innerHTML = items.length ? items.map(linkCard).join('') : empty('No links match your filters.');
+    }
+
+    /* category filter chips, built from data */
+    function buildFilters(containerSel, items, stateKey, rerender) {
+      const cats = ['All', ...Array.from(new Set(items.map((i) => i.category).filter(Boolean)))];
+      const el = $(containerSel);
+      el.innerHTML = cats.map((c) => `<button class="chip ${c === state.filters[stateKey] ? 'active' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+      $$('.chip', el).forEach((chip) => chip.addEventListener('click', () => {
+        state.filters[stateKey] = chip.dataset.cat;
+        $$('.chip', el).forEach((c) => c.classList.toggle('active', c === chip));
+        rerender();
+      }));
+    }
+
+    function renderAll() {
+      // sidebar counts
+      $$('.badge-count').forEach((b) => { b.textContent = state.data[b.dataset.count].length; });
+      renderDashboard();
+      buildFilters('#toolsFilters', state.data.tools, 'toolCat', renderTools);
+      buildFilters('#linksFilters', state.data.links, 'linkCat', renderLinks);
+      renderTerms(); renderTools(); renderLinks();
+    }
+
+    /* ================================================================
+       Data loading
+       ================================================================ */
+    async function loadData() {
+      ['#termsGrid', '#toolsGrid', '#linksGrid', '#recentTerms', '#recentTools'].forEach((s) => { $(s).innerHTML = skeleton(4); });
+      $('#statGrid').innerHTML = skeleton(4);
+      try {
+        const res = await fetch('data.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        state.data.terms = Array.isArray(json.terms) ? json.terms : [];
+        state.data.tools = Array.isArray(json.tools) ? json.tools : [];
+        state.data.links = Array.isArray(json.links) ? json.links : [];
+        renderAll();
+      } catch (err) {
+        console.error('CyberFlow: failed to load data.json —', err);
+        ['#termsGrid', '#toolsGrid', '#linksGrid', '#recentTerms', '#recentTools', '#statGrid'].forEach((s) => { $(s).innerHTML = errorBox(); });
+      }
+    }
+
+    /* ================================================================
+       Navigation / routing (SPA view switching)
+       ================================================================ */
+    function setView(view) {
+      if (!META[view]) view = 'dashboard';
+      state.view = view;
+      $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + view));
+      $$('.nav-item').forEach((n) => n.classList.toggle('active', n.dataset.view === view));
+      $('#pageTitle').textContent = META[view].title;
+      $('#pageSub').textContent = META[view].sub;
+      $('#app').classList.remove('nav-open');          // close mobile drawer
+      $('.content').scrollTo?.(0, 0);
+      window.scrollTo(0, 0);
+    }
+
+    /* ================================================================
+       Search wiring
+       ================================================================ */
+    function wireSearch() {
+      $('#termsSearch').addEventListener('input', (e) => { state.filters.terms = e.target.value; renderTerms(); });
+      $('#toolsSearch').addEventListener('input', (e) => { state.filters.tools = e.target.value; renderTools(); });
+      $('#linksSearch').addEventListener('input', (e) => { state.filters.links = e.target.value; renderLinks(); });
+
+      $('#globalSearch').addEventListener('input', (e) => {
+        const v = e.target.value;
+        state.filters.terms = state.filters.tools = state.filters.links = v;
+        $('#termsSearch').value = $('#toolsSearch').value = $('#linksSearch').value = v;
+        renderTerms(); renderTools(); renderLinks();
+        if (v && state.view === 'dashboard') setView('terms');
+      });
+
+      // "/" focuses global search
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !/input|textarea|select/i.test(document.activeElement.tagName)) {
+          e.preventDefault(); $('#globalSearch').focus();
+        }
+      });
+    }
+
+    /* ================================================================
+       Misc wiring
+       ================================================================ */
+    function wireTheme() {
+      const root = document.documentElement;
+      const saved = localStorage.getItem('cyberflow-theme');
+      if (saved) root.setAttribute('data-theme', saved);
+      $('#themeToggle').addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('cyberflow-theme', next);
+      });
+    }
+
+    function wireNav() {
+      $('#nav').addEventListener('click', (e) => {
+        const btn = e.target.closest('.nav-item');
+        if (btn) setView(btn.dataset.view);
+      });
+      // "View all" / jump links inside dashboard
+      $$('[data-jump]').forEach((a) => a.addEventListener('click', () => setView(a.dataset.jump)));
+      // mobile drawer
+      $('#menuBtn').addEventListener('click', () => $('#app').classList.toggle('nav-open'));
+      $('#backdrop').addEventListener('click', () => $('#app').classList.remove('nav-open'));
+    }
+
+    /* ================================================================
+       Init
+       ================================================================ */
+    function init() {
+      wireTheme();
+      wireNav();
+      wireSearch();
+      setView('dashboard');
+      loadData();
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

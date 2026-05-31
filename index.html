@@ -124,6 +124,7 @@
     }
     .nav-item:hover { background: hsl(var(--muted) / .6); color: hsl(var(--foreground)); }
     .nav-item.active { background: hsl(var(--muted)); color: hsl(var(--foreground)); border-color: hsl(var(--border)); }
+    .nav-item .nav-emoji { font-size: 1.02rem; width: 20px; text-align: center; line-height: 1; flex-shrink: 0; filter: saturate(.9); }
     .nav-item .badge-count {
       margin-left: auto; font-size: .7rem; font-weight: 600;
       background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
@@ -234,7 +235,7 @@
     .stat:hover { background: hsl(var(--card-hover)); border-color: hsl(var(--border-strong)); transform: translateY(-2px); }
     .stat .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .stat .label { font-size: .8rem; color: hsl(var(--muted-foreground)); font-weight: 500; }
-    .stat .ico { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: hsl(var(--muted)); color: hsl(var(--accent)); }
+    .stat .ico { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: hsl(var(--muted)); color: hsl(var(--accent)); font-size: 1.05rem; line-height: 1; border: 1px solid hsl(var(--border)); }
     .stat .ico .icon { width: 17px; height: 17px; }
     .stat .num { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
     .stat .delta { font-size: .74rem; color: hsl(var(--muted-foreground)); margin-top: 6px; }
@@ -252,8 +253,16 @@
       transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
     }
     .card:hover { background: hsl(var(--card-hover)); border-color: hsl(var(--border-strong)); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-    .card h3 { font-size: .95rem; font-weight: 600; letter-spacing: -.01em; }
+    .card .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .card .title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .card h3 { font-size: .95rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .emoji-tile {
+      width: 32px; height: 32px; flex-shrink: 0; line-height: 1;
+      display: grid; place-items: center; font-size: 1.05rem;
+      border-radius: 9px; background: hsl(var(--muted)); border: 1px solid hsl(var(--border));
+      transition: transform .15s ease, background .15s ease;
+    }
+    .card:hover .emoji-tile { transform: scale(1.06); background: hsl(var(--accent) / .12); }
     .card p { font-size: .83rem; color: hsl(var(--muted-foreground)); }
     .badge {
       font-size: .68rem; font-weight: 600; letter-spacing: .02em;
@@ -334,21 +343,21 @@
       <div class="nav-group-label">Workspace</div>
       <nav class="nav" id="nav">
         <button class="nav-item active" data-view="dashboard">
-          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          <span class="nav-emoji">🏠</span>
           <span>Dashboard</span>
         </button>
         <button class="nav-item" data-view="terms">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="nav-emoji">📚</span>
           <span>Terms</span>
           <span class="badge-count" data-count="terms">0</span>
         </button>
         <button class="nav-item" data-view="tools">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1 2.5-2.5z"/></svg>
+          <span class="nav-emoji">🛠️</span>
           <span>Security Tools</span>
           <span class="badge-count" data-count="tools">0</span>
         </button>
         <button class="nav-item" data-view="links">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+          <span class="nav-emoji">🔗</span>
           <span>Cyber Links</span>
           <span class="badge-count" data-count="links">0</span>
         </button>
@@ -393,16 +402,16 @@
         <section class="view active" id="view-dashboard">
           <div class="stat-grid" id="statGrid"></div>
 
-          <div class="section-label">Recently added terms <a data-jump="terms">View all</a></div>
+          <div class="section-label">📚 Recently added terms <a data-jump="terms">View all</a></div>
           <div class="grid" id="recentTerms"></div>
 
-          <div class="section-label" style="margin-top:24px;">Popular tools <a data-jump="tools">View all</a></div>
+          <div class="section-label" style="margin-top:24px;">🛠️ Popular tools <a data-jump="tools">View all</a></div>
           <div class="grid" id="recentTools"></div>
         </section>
 
         <!-- ---------- Terms view ---------- -->
         <section class="view" id="view-terms">
-          <div class="view-head"><div><h2>Cyber Security Terms</h2><p>Core vocabulary for analysts and defenders</p></div></div>
+          <div class="view-head"><div><h2>📚 Cyber Security Terms</h2><p>Core vocabulary for analysts and defenders</p></div></div>
           <div class="toolbar">
             <div class="field">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -414,7 +423,7 @@
 
         <!-- ---------- Tools view ---------- -->
         <section class="view" id="view-tools">
-          <div class="view-head"><div><h2>Security Tools</h2><p>Software for recon, exploitation, and defense</p></div></div>
+          <div class="view-head"><div><h2>🛠️ Security Tools</h2><p>Software for recon, exploitation, and defense</p></div></div>
           <div class="toolbar">
             <div class="field">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -427,7 +436,7 @@
 
         <!-- ---------- Links view ---------- -->
         <section class="view" id="view-links">
-          <div class="view-head"><div><h2>Cyber Links</h2><p>Trusted resources professionals use daily</p></div></div>
+          <div class="view-head"><div><h2>🔗 Cyber Links</h2><p>Trusted resources professionals use daily</p></div></div>
           <div class="toolbar">
             <div class="field">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -489,16 +498,16 @@
     function renderDashboard() {
       const t = state.data.terms.length, o = state.data.tools.length, l = state.data.links.length;
       const stats = [
-        { label: 'Total Terms', value: t, ico: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>', delta: 'reference entries' },
-        { label: 'Total Tools', value: o, ico: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1 2.5-2.5z"/>', delta: 'across categories' },
-        { label: 'Cyber Links', value: l, ico: '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>', delta: 'curated resources' },
-        { label: 'Total Items', value: t + o + l, ico: '<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-5"/>', delta: 'in workspace' },
+        { label: 'Total Terms', value: t, emoji: '📖', delta: 'reference entries' },
+        { label: 'Total Tools', value: o, emoji: '🧰', delta: 'across categories' },
+        { label: 'Cyber Links', value: l, emoji: '🌐', delta: 'curated resources' },
+        { label: 'Total Items', value: t + o + l, emoji: '📊', delta: 'in workspace' },
       ];
       $('#statGrid').innerHTML = stats.map((s, i) => `
         <div class="stat" style="animation-delay:${i * .05}s">
           <div class="row">
             <span class="label">${s.label}</span>
-            <span class="ico"><svg class="icon" viewBox="0 0 24 24">${s.ico}</svg></span>
+            <span class="ico">${s.emoji}</span>
           </div>
           <div class="num" data-target="${s.value}">0</div>
           <div class="delta"><b>${s.value}</b> ${s.delta}</div>
@@ -522,17 +531,55 @@
       });
     }
 
+    /* ----------------------------------------------------------------
+       Emoji resolvers — keep visual labels consistent & data-driven.
+       Matching is keyword-based so new JSON entries get sensible icons.
+       ---------------------------------------------------------------- */
+    // Terms: matched on the term name (first hit wins), else a safe default.
+    const TERM_EMOJI = [
+      [/phish/i, '🎣'], [/ransom/i, '🧨'], [/malware|virus|trojan|worm|spyware/i, '🧬'],
+      [/zero.?day/i, '🕳️'], [/firewall/i, '🧱'], [/encrypt|cipher|crypto/i, '🔐'],
+      [/brute.?force/i, '🔨'], [/sql|injection/i, '💉'], [/social.?eng/i, '🧠'],
+      [/ddos|denial/i, '🌊'], [/mfa|2fa|two.?factor|auth/i, '🔑'], [/privilege|escal/i, '🪜'],
+      [/vpn/i, '🛡️'], [/osint|recon/i, '🕵️'], [/\blog/i, '🧾'], [/\bdns\b/i, '🌍'],
+      [/malw|backdoor|rootkit/i, '🐛'], [/token|session|cookie/i, '🍪'], [/patch|update/i, '🩹'],
+      [/exploit|payload/i, '💥'], [/breach|leak/i, '🚪'], [/honeypot/i, '🍯'],
+    ];
+    const termEmoji = (name = '') => (TERM_EMOJI.find(([re]) => re.test(name)) || [null, '🔒'])[1];
+
+    // Tools: name override first, then category fallback.
+    const TOOL_NAME_EMOJI = [
+      [/nmap/i, '🛰️'], [/wireshark/i, '📡'], [/tcpdump/i, '📡'], [/metasploit/i, '🧨'],
+      [/burp/i, '🌐'], [/zap/i, '🕷️'], [/nikto/i, '🕷️'], [/john/i, '🔒'], [/hashcat/i, '🔑'],
+      [/hydra/i, '🔑'], [/aircrack/i, '📶'], [/snort|suricata/i, '🛡️'], [/recon.?ng|amass|sublist/i, '🔎'],
+    ];
+    const TOOL_CAT_EMOJI = {
+      Recon: '🛰️', Web: '🌐', Network: '📡', Passwords: '🔑', Exploitation: '🧨',
+      Wireless: '📶', Cloud: '☁️', Forensics: '🔬', Defense: '🛡️',
+    };
+    const toolEmoji = (tool = {}) =>
+      (TOOL_NAME_EMOJI.find(([re]) => re.test(tool.name || ''))?.[1]) || TOOL_CAT_EMOJI[tool.category] || '🛠️';
+
+    // Links: category-based.
+    const LINK_CAT_EMOJI = {
+      Learning: '📚', Labs: '🧪', News: '📰', 'Threat Intel': '🚨',
+      Documentation: '📄', Community: '👥', Tools: '🧰',
+    };
+    const linkEmoji = (l = {}) => LINK_CAT_EMOJI[l.category] || '🔗';
+
     /* card templates */
     const termCard = (t) => `
       <article class="card">
-        <div class="top"><h3>${esc(t.name)}</h3></div>
+        <div class="top">
+          <div class="title-wrap"><span class="emoji-tile">${termEmoji(t.name)}</span><h3>${esc(t.name)}</h3></div>
+        </div>
         <p>${esc(t.description)}</p>
       </article>`;
 
     const toolCard = (t) => `
       <article class="card">
         <div class="top">
-          <h3>${esc(t.name)}</h3>
+          <div class="title-wrap"><span class="emoji-tile">${toolEmoji(t)}</span><h3>${esc(t.name)}</h3></div>
           ${t.category ? `<span class="badge accent">${esc(t.category)}</span>` : ''}
         </div>
         <p>${esc(t.description)}</p>
@@ -542,11 +589,11 @@
     const linkCard = (l) => `
       <article class="card">
         <div class="top">
-          <h3>${esc(l.name)}</h3>
+          <div class="title-wrap"><span class="emoji-tile">${linkEmoji(l)}</span><h3>${esc(l.name)}</h3></div>
           ${l.category ? `<span class="badge">${esc(l.category)}</span>` : ''}
         </div>
         <p>${esc(l.purpose)}</p>
-        ${l.url ? `<div class="foot"><span class="muted-ico"><svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><a class="link-btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Open ${extIcon}</a></div>` : ''}
+        ${l.url ? `<div class="foot"><span></span><a class="link-btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Open ${extIcon}</a></div>` : ''}
       </article>`;
 
     function renderTerms() {
